@@ -44,10 +44,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InitialisedQueue.cs" />
+    <Compile Include="CustomConsumer.cs" />
+    <Compile Include="interfaces\IManagedConsumer.cs" />
+    <Compile Include="models\InitialisedQueue.cs" />
+    <Compile Include="models\ProcessResult.cs" />
+    <Compile Include="models\ResultStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="queueing\QueueConsumer.cs" />
+    <Compile Include="queueing\QueueInitialiser.cs" />
     <Compile Include="Service.cs" />
+    <Compile Include="ServiceFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

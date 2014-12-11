@@ -1,91 +1,35 @@
 ﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
+using RabbitMQQueueingBasicConsumer.models;
+using RabbitMQQueueingBasicConsumer.queueing;
 
 namespace RabbitMQQueueingBasicConsumer
 {
     public class Service
     {
-        private readonly InitialisedQueue _initialiseQueue;
-        private QueueingBasicConsumer _queueingBasicConsumer;
-        private CancellationTokenSource _cancellationToken;
+        private readonly QueueInitialiser _queueInitialiser;
+        private readonly Func<IModel, QueueConsumer> _queueConsumerFactory;
+        private InitialisedQueue _initialisedQueue;
+        private QueueConsumer _queueConsumer;
 
-        public Service(InitialisedQueue initialiseQueue)
+        public Service(QueueInitialiser queueInitialiser, Func<IModel, QueueConsumer> queueConsumerFactory)
         {
-            _initialiseQueue = initialiseQueue;
-        }
-
-        private void BeginConsumption()
-        {
-            _queueingBasicConsumer = new QueueingBasicConsumer();
-            _initialiseQueue.Channel.BasicConsume("MyQueue", false, "default", _queueingBasicConsumer);
-        }
-
-        private void CancelConsumption()
-        {
-            _initialiseQueue.Channel.BasicCancel("default");
+            _queueInitialiser = queueInitialiser;
+            _queueConsumerFactory = queueConsumerFactory;
         }
 
         public void Start()
         {
-            _cancellationToken = new CancellationTokenSource();
-
-            BeginConsumption();
-
-            Task.Factory.StartNew(Go);
-        }
-
-        private void Go()
-        {
-            try
-            {
-
-                BasicDeliverEventArgs args = null;
-                var dequeued = false;
-
-                try
-                {
-                    dequeued = _queueingBasicConsumer.Queue.Dequeue(1000, out args);
-                }
-                catch (EndOfStreamException)
-                {
-                    if (_cancellationToken.IsCancellationRequested)
-                        return;
-
-                    CancelConsumption();
-                    BeginConsumption();
-                }
-
-                if (dequeued)
-                {
-                    Console.WriteLine("Dequeued a message!");
-                    AckMessage(args.DeliveryTag);
-                }
-
-                Task.Factory.StartNew(Go);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception! {0}", ex.Message);
-                throw;
-            }
-        }
-
-        private void AckMessage(ulong deliveryTag)
-        {
-            _initialiseQueue.Channel.BasicNack(deliveryTag, false, false);
+            _initialisedQueue = _queueInitialiser.InitialiseQueue();
+            _queueConsumer = _queueConsumerFactory(_initialisedQueue.Channel);
+            _queueConsumer.Start();
         }
 
         public void Stop()
         {
-            _cancellationToken.Cancel();
-
-            CancelConsumption();
-            _initialiseQueue.Channel.Close();
-            _initialiseQueue.Connection.Close();
+            _queueConsumer.Stop();
+            _initialisedQueue.Channel.Close();
+            _initialisedQueue.Connection.Close();
         }
     }
 }

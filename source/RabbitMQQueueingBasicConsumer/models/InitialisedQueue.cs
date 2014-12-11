@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace RabbitMQQueueingBasicConsumer
+namespace RabbitMQQueueingBasicConsumer.models
 {
     public class InitialisedQueue
     {
