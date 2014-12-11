@@ -47,63 +47,55 @@ namespace RabbitMQ.ManagedConsumerExample.queueing
 
         private void ProcessQueue()
         {
+            BasicDeliverEventArgs args = null;
+            var dequeued = false;
+
             try
             {
-                BasicDeliverEventArgs args = null;
-                var dequeued = false;
+                dequeued = _queueingBasicConsumer.Queue.Dequeue(1000, out args);
+            }
+            catch (EndOfStreamException)
+            {
+                if (_cancellationToken.IsCancellationRequested)
+                {
+                    Console.WriteLine("{0:o} :: Cancellation requested, exiting consumption loop", DateTime.Now);
+                    return;
+                }
 
+                Console.WriteLine("{0:o} :: Consumer failed with EndOfStreamException, reconsuming...", DateTime.Now);
+
+                CancelConsumption();
+                BeginConsumption();
+            }
+
+            if (dequeued)
+            {
+                ProcessResult result = null;
                 try
                 {
-                    dequeued = _queueingBasicConsumer.Queue.Dequeue(1000, out args);
+                    result = _managedConsumer.ProcessMessage(args);
                 }
-                catch (EndOfStreamException)
+                catch (Exception ex)
                 {
-                    if (_cancellationToken.IsCancellationRequested)
-                    {
-                        Console.WriteLine("{0:o} :: Cancellation requested, exiting consumption loop", DateTime.Now);
-                        return;
-                    }
-
-                    Console.WriteLine("{0:o} :: Consumer failed with EndOfStreamException, reconsuming...", DateTime.Now);
-
-                    CancelConsumption();
-                    BeginConsumption();
+                    Console.WriteLine("Managed consumer threw exception: {0}", ex.Message);
+                    SendNotAcknowedged(args.DeliveryTag, false);
                 }
 
-                if (dequeued)
+                if (result != null)
                 {
-                    ProcessResult result = null;
-                    try
+                    switch (result.Status)
                     {
-                        result = _managedConsumer.ProcessMessage(args);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Managed consumer threw exception: {0}", ex.Message);
-                        SendNotAcknowedged(args.DeliveryTag, false);
-                    }
-
-                    if (result != null)
-                    {
-                        switch (result.Status)
-                        {
-                            case ResultStatus.Acknowledged:
-                                SendAcknowledged(args.DeliveryTag);
-                                break;
-                            default:
-                                SendNotAcknowedged(args.DeliveryTag);
-                                break;
-                        }
+                        case ResultStatus.Acknowledged:
+                            SendAcknowledged(args.DeliveryTag);
+                            break;
+                        default:
+                            SendNotAcknowedged(args.DeliveryTag);
+                            break;
                     }
                 }
+            }
 
-                Task.Factory.StartNew(ProcessQueue);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception! {0}", ex.Message);
-                throw;
-            }
+            Task.Factory.StartNew(ProcessQueue);
         }
 
         private void SendAcknowledged(ulong deliveryTag)

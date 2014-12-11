@@ -11,17 +11,18 @@ namespace RabbitMQ.ManagedConsumerExample
         public ProcessResult ProcessMessage(BasicDeliverEventArgs args)
         {
             var body = Encoding.UTF8.GetString(args.Body);
-            Console.WriteLine("{0:o} :: Got message {1}", DateTime.Now, body);
+            Console.WriteLine("{0:o} :: Got message: {1}", DateTime.Now, body);
 
             if (body == "nack")
             {
                 if (!args.Redelivered)
                 {
-                    Console.WriteLine("{0:o} :: NACK'ing message.", DateTime.Now);
+                    Console.WriteLine("{0:o} :: Not Acknowledging message.", DateTime.Now);
                     return new ProcessResult(ResultStatus.NotAcknowledged);
                 }
             }
 
+            Console.WriteLine("{0:o} :: Acknowledging message.", DateTime.Now);
             return new ProcessResult(ResultStatus.Acknowledged);
         }
     }
