@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -10,6 +11,7 @@ namespace RabbitMQQueueingBasicConsumer
     {
         private readonly InitialisedQueue _initialiseQueue;
         private QueueingBasicConsumer _queueingBasicConsumer;
+        private CancellationTokenSource _cancellationToken;
 
         public Service(InitialisedQueue initialiseQueue)
         {
@@ -29,6 +31,8 @@ namespace RabbitMQQueueingBasicConsumer
 
         public void Start()
         {
+            _cancellationToken = new CancellationTokenSource();
+
             BeginConsumption();
 
             Task.Factory.StartNew(Go);
@@ -48,6 +52,9 @@ namespace RabbitMQQueueingBasicConsumer
                 }
                 catch (EndOfStreamException)
                 {
+                    if (_cancellationToken.IsCancellationRequested)
+                        return;
+
                     CancelConsumption();
                     BeginConsumption();
                 }
@@ -74,6 +81,8 @@ namespace RabbitMQQueueingBasicConsumer
 
         public void Stop()
         {
+            _cancellationToken.Cancel();
+
             CancelConsumption();
             _initialiseQueue.Channel.Close();
             _initialiseQueue.Connection.Close();
