@@ -7,8 +7,8 @@
     <ProjectGuid>{93CD3F93-1BD5-48FE-9197-F96023789AA8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RabbitMQQueueingBasicConsumer</RootNamespace>
-    <AssemblyName>RabbitMQQueueingBasicConsumer</AssemblyName>
+    <RootNamespace>RabbitMQ.ManagedConsumerExample</RootNamespace>
+    <AssemblyName>RabbitMQ.ManagedConsumerExample</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

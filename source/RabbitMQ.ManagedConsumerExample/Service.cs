@@ -1,9 +1,9 @@
 ﻿using System;
 using RabbitMQ.Client;
-using RabbitMQQueueingBasicConsumer.models;
-using RabbitMQQueueingBasicConsumer.queueing;
+using RabbitMQ.ManagedConsumerExample.models;
+using RabbitMQ.ManagedConsumerExample.queueing;
 
-namespace RabbitMQQueueingBasicConsumer
+namespace RabbitMQ.ManagedConsumerExample
 {
     public class Service
     {

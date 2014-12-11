@@ -1,4 +1,4 @@
-﻿namespace RabbitMQQueueingBasicConsumer.models
+﻿namespace RabbitMQ.ManagedConsumerExample.models
 {
     public class ProcessResult
     {

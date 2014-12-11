@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RabbitMQQueueingBasicConsumer
+namespace RabbitMQ.ManagedConsumerExample
 {
     public class Program
     {

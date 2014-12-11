@@ -1,7 +1,7 @@
 ﻿using RabbitMQ.Client.Events;
-using RabbitMQQueueingBasicConsumer.models;
+using RabbitMQ.ManagedConsumerExample.models;
 
-namespace RabbitMQQueueingBasicConsumer.interfaces
+namespace RabbitMQ.ManagedConsumerExample.interfaces
 {
     public interface IManagedConsumer
     {

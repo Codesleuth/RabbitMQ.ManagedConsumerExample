@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using RabbitMQQueueingBasicConsumer.interfaces;
-using RabbitMQQueueingBasicConsumer.models;
+using RabbitMQ.ManagedConsumerExample.interfaces;
+using RabbitMQ.ManagedConsumerExample.models;
 
-namespace RabbitMQQueueingBasicConsumer.queueing
+namespace RabbitMQ.ManagedConsumerExample.queueing
 {
     public class QueueConsumer
     {

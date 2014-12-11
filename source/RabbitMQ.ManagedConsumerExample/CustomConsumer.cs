@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Text;
 using RabbitMQ.Client.Events;
-using RabbitMQQueueingBasicConsumer.interfaces;
-using RabbitMQQueueingBasicConsumer.models;
+using RabbitMQ.ManagedConsumerExample.interfaces;
+using RabbitMQ.ManagedConsumerExample.models;
 
-namespace RabbitMQQueueingBasicConsumer
+namespace RabbitMQ.ManagedConsumerExample
 {
     public class CustomConsumer : IManagedConsumer
     {

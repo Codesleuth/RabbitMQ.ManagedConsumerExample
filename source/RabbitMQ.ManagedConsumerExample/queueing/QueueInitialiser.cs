@@ -1,7 +1,7 @@
 ﻿using RabbitMQ.Client;
-using RabbitMQQueueingBasicConsumer.models;
+using RabbitMQ.ManagedConsumerExample.models;
 
-namespace RabbitMQQueueingBasicConsumer.queueing
+namespace RabbitMQ.ManagedConsumerExample.queueing
 {
     public class QueueInitialiser
     {

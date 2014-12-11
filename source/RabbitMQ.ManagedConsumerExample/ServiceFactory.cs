@@ -1,7 +1,7 @@
 ﻿using RabbitMQ.Client;
-using RabbitMQQueueingBasicConsumer.queueing;
+using RabbitMQ.ManagedConsumerExample.queueing;
 
-namespace RabbitMQQueueingBasicConsumer
+namespace RabbitMQ.ManagedConsumerExample
 {
     public static class ServiceFactory
     {
