@@ -10,7 +10,7 @@ namespace RabbitMQ.ManagedConsumerExample
             var queueInitialiser = new QueueInitialiser();
             var customConsumer = new CustomConsumer();
 
-            return new Service(queueInitialiser, channel => new QueueConsumer(channel, () => new QueueingBasicConsumer(channel), customConsumer));
+            return new Service(queueInitialiser, customConsumer, (channel, consumer) => new QueueConsumer(channel, () => new QueueingBasicConsumer(channel), consumer));
         }
     }
 }

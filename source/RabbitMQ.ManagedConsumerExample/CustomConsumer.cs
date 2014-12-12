@@ -21,6 +21,11 @@ namespace RabbitMQ.ManagedConsumerExample
                     return new ProcessResult(ResultStatus.NotAcknowledged);
                 }
             }
+            else if (body == "backoff")
+            {
+                Console.WriteLine("{0:o} :: Backing off for 5 seconds...", DateTime.Now);
+                return new ProcessResult(ResultStatus.Acknowledged, 5000);
+            }
 
             Console.WriteLine("{0:o} :: Acknowledging message.", DateTime.Now);
             return new ProcessResult(ResultStatus.Acknowledged);

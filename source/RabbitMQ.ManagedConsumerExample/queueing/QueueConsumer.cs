@@ -83,14 +83,18 @@ namespace RabbitMQ.ManagedConsumerExample.queueing
 
                 if (result != null)
                 {
-                    switch (result.Status)
+                    if (result.Status == ResultStatus.Acknowledged)
                     {
-                        case ResultStatus.Acknowledged:
-                            SendAcknowledged(args.DeliveryTag);
-                            break;
-                        default:
-                            SendNotAcknowedged(args.DeliveryTag);
-                            break;
+                        SendAcknowledged(args.DeliveryTag);
+                        if (result.PauseMilliseconds.HasValue)
+                        {
+                            Thread.Sleep(result.PauseMilliseconds.Value);
+                            Console.WriteLine("{0:o} :: Resuming", DateTime.Now);
+                        }
+                    }
+                    else
+                    {
+                        SendNotAcknowedged(args.DeliveryTag);
                     }
                 }
             }
