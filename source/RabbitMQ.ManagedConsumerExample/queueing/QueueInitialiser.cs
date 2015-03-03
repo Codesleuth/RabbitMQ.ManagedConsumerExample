@@ -24,6 +24,8 @@ namespace RabbitMQ.ManagedConsumerExample.queueing
             var connection = _connectionFactory.CreateConnection();
             var channel = connection.CreateModel();
 
+            channel.ExchangeDeclare("MyExchange", "headers");
+
             channel.QueueDeclare("MyQueue", true, false, false, null);
             channel.QueueBind("MyQueue", "MyExchange", string.Empty);
 

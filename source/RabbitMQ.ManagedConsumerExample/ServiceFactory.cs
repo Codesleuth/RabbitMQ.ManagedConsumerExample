@@ -5,12 +5,12 @@ namespace RabbitMQ.ManagedConsumerExample
 {
     public static class ServiceFactory
     {
-        public static Service CreateServer()
+        public static Server CreateServer()
         {
             var queueInitialiser = new QueueInitialiser();
             var customConsumer = new CustomConsumer();
 
-            return new Service(queueInitialiser, customConsumer, (channel, consumer) => new QueueConsumer(channel, () => new QueueingBasicConsumer(channel), consumer));
+            return new Server(queueInitialiser, customConsumer, (channel, consumer) => new QueueConsumer(channel, () => new QueueingBasicConsumer(channel), consumer));
         }
     }
 }

@@ -2,15 +2,19 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using log4net;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.ManagedConsumerExample.interfaces;
 using RabbitMQ.ManagedConsumerExample.models;
+using MethodBase = System.Reflection.MethodBase;
 
 namespace RabbitMQ.ManagedConsumerExample.queueing
 {
     public class QueueConsumer
     {
+        private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly IModel _channel;
         private readonly Func<QueueingBasicConsumer> _consumerFactory;
         private readonly IManagedConsumer _managedConsumer;
@@ -58,11 +62,11 @@ namespace RabbitMQ.ManagedConsumerExample.queueing
             {
                 if (_cancellationToken.IsCancellationRequested)
                 {
-                    Console.WriteLine("{0:o} :: Cancellation requested, exiting consumption loop", DateTime.Now);
+                    _log.Info("Cancellation requested, exiting consumption loop");
                     return;
                 }
 
-                Console.WriteLine("{0:o} :: Consumer failed with EndOfStreamException, reconsuming...", DateTime.Now);
+                _log.Info("Consumer failed with EndOfStreamException");
 
                 CancelConsumption();
                 BeginConsumption();
@@ -77,7 +81,7 @@ namespace RabbitMQ.ManagedConsumerExample.queueing
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Managed consumer threw exception: {0}", ex.Message);
+                    _log.Error("Managed consumer threw exception: {0}", ex);
                     SendNotAcknowedged(args.DeliveryTag, false);
                 }
 
@@ -89,7 +93,7 @@ namespace RabbitMQ.ManagedConsumerExample.queueing
                         if (result.PauseMilliseconds.HasValue)
                         {
                             Thread.Sleep(result.PauseMilliseconds.Value);
-                            Console.WriteLine("{0:o} :: Resuming", DateTime.Now);
+                            _log.Info("Resuming");
                         }
                     }
                     else

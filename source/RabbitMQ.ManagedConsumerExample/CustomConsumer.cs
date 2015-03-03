@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reflection;
 using System.Text;
+using log4net;
 using RabbitMQ.Client.Events;
 using RabbitMQ.ManagedConsumerExample.interfaces;
 using RabbitMQ.ManagedConsumerExample.models;
@@ -8,26 +10,28 @@ namespace RabbitMQ.ManagedConsumerExample
 {
     public class CustomConsumer : IManagedConsumer
     {
+        private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public ProcessResult ProcessMessage(BasicDeliverEventArgs args)
         {
             var body = Encoding.UTF8.GetString(args.Body);
-            Console.WriteLine("{0:o} :: Got message: {1}", DateTime.Now, body);
+            _log.InfoFormat("Got message: {0}", body);
 
             if (body == "nack")
             {
                 if (!args.Redelivered)
                 {
-                    Console.WriteLine("{0:o} :: Not Acknowledging message.", DateTime.Now);
+                    _log.Info("Not Acknowledging message.");
                     return new ProcessResult(ResultStatus.NotAcknowledged);
                 }
             }
             else if (body == "backoff")
             {
-                Console.WriteLine("{0:o} :: Backing off for 5 seconds...", DateTime.Now);
+                _log.Info("Backing off for 5 seconds...");
                 return new ProcessResult(ResultStatus.Acknowledged, 5000);
             }
 
-            Console.WriteLine("{0:o} :: Acknowledging message.", DateTime.Now);
+            _log.Info("Acknowledging message.");
             return new ProcessResult(ResultStatus.Acknowledged);
         }
     }

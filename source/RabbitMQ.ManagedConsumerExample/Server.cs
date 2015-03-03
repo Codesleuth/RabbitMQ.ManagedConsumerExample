@@ -6,7 +6,7 @@ using RabbitMQ.ManagedConsumerExample.queueing;
 
 namespace RabbitMQ.ManagedConsumerExample
 {
-    public class Service
+    public class Server
     {
         private readonly QueueInitialiser _queueInitialiser;
         private readonly IManagedConsumer _managedConsumer;
@@ -14,7 +14,7 @@ namespace RabbitMQ.ManagedConsumerExample
         private InitialisedQueue _initialisedQueue;
         private QueueConsumer _queueConsumer;
 
-        public Service(QueueInitialiser queueInitialiser, IManagedConsumer managedConsumer, Func<IModel, IManagedConsumer, QueueConsumer> queueConsumerFactory)
+        public Server(QueueInitialiser queueInitialiser, IManagedConsumer managedConsumer, Func<IModel, IManagedConsumer, QueueConsumer> queueConsumerFactory)
         {
             _queueInitialiser = queueInitialiser;
             _managedConsumer = managedConsumer;

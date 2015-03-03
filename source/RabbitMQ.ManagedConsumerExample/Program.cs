@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net.Config;
+using Topshelf;
 
 namespace RabbitMQ.ManagedConsumerExample
 {
@@ -6,14 +7,32 @@ namespace RabbitMQ.ManagedConsumerExample
     {
         public static void Main(string[] args)
         {
-            var server = ServiceFactory.CreateServer();
-            server.Start();
+            XmlConfigurator.Configure();
 
-            Console.WriteLine("Press any key to stop the service...");
-            Console.ReadKey();
-            Console.WriteLine("Stopping...");
+            HostFactory.Run(hc =>
+            {
+                hc.UseLog4Net();
 
-            server.Stop();
+                hc.Service<Server>(sc =>
+                {
+                    sc.ConstructUsing(ServiceFactory.CreateServer);
+                    sc.WhenStarted(s => s.Start());
+                    sc.WhenStopped(s => s.Stop());
+                });
+
+                hc.RunAsLocalSystem();
+                hc.DependsOnEventLog();
+
+                hc.SetDescription("RabbitMQ Managed Consumer Example.");
+                hc.SetServiceName("RabbitMQ.ManagedConsumerExample.Service");
+                hc.SetDisplayName("RabbitMQ Managed Consumer Example");
+
+                hc.EnableServiceRecovery(rc =>
+                {
+                    rc.RestartService(1);
+                    rc.SetResetPeriod(0);
+                });
+            });
         }
     }
 }
