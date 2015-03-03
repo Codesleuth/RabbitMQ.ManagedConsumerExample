@@ -1,4 +1,5 @@
-﻿using log4net.Config;
+﻿using System;
+using log4net.Config;
 using Topshelf;
 
 namespace RabbitMQ.ManagedConsumerExample
@@ -20,8 +21,8 @@ namespace RabbitMQ.ManagedConsumerExample
                     sc.WhenStopped(s => s.Stop());
                 });
 
-                hc.RunAsLocalSystem();
-                hc.DependsOnEventLog();
+                if (!Environment.UserInteractive)
+                    hc.RunAsLocalSystem();
 
                 hc.SetDescription("RabbitMQ Managed Consumer Example.");
                 hc.SetServiceName("RabbitMQ.ManagedConsumerExample.Service");
